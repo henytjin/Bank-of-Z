@@ -72,7 +72,7 @@ variables:
 
   # DB2 Exit Library. Example: DBC0CFG.SDSNEXIT
   - name: SDSNEXIT
-    value: DSN.V13R1M0.SDSNEXIT
+    value: DB2V13.SDSNEXIT
 
   # IMS Macro Library. Example: DFS.V11R1M0.SDFSMAC
   - name: SDFSMAC
@@ -104,7 +104,7 @@ variables:
 
   # PD Tools Common Component load library. Example : PDTCC.V1R8.SIPVMODA 
   - name: PDTCCMOD
-    value: IPV.V1R9M0.SIPVMODA
+    value: IPV.SIPVMODA
   
   # 
   - name: MODGEN
@@ -116,5 +116,5 @@ variables:
 
   # Optional TAz library containing necessary copybooks. 
   - name: SEQASAMP
-    value: EQA.V16R0M0.SEQASAMP
+    value: EQAW.SEQASAMP
 
