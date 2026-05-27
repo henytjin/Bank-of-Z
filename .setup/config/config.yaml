@@ -12,7 +12,7 @@ repositories:
 
 # Java Home
 java:
-  java_home: /usr/local/sandboxes/tools/J21.0_64
+  java_home: /u/henry/sandboxes/tools/J21.0_64
 
 # Application metadata
 app:
@@ -26,21 +26,21 @@ app:
 # Sandbox root directory (USS)
 sandbox:
   # Root path of the project on the remote server
-  path: /usr/local/sandboxes/bank-of-z
+  path: /u/henry/sandboxes/bank-of-z
 
 # Z configuration tools
 zconfig:
   # Z Config installation directory
-  zconfig_home: /usr/local/sandboxes/tools/zconfig
+  zconfig_home: /u/henry/sandboxes/tools/zconfig
   # CICS Resource Builder installation
-  zcb_home: /usr/local/sandboxes/tools/zrb/cics-resource-builder-1.0.6
+  zcb_home: /u/henry/sandboxes/tools/zrb/cics-resource-builder-1.0.6
   # Java runtime for Z tools
   java_home: ${java.java_home}
 
 # DBB (Dependency Based Build)
 dbb:
   # DBB installation directory
-  dbb_home: /usr/local/sandboxes/tools/dbb
+  dbb_home: /u/henry/sandboxes/tools/dbb
   # Java runtime for DBB
   java_home: ${java.java_home}
   # DBB build output directory
@@ -106,7 +106,7 @@ wazideploy:
 # TAZ Unit Test configuration
 taz:
   # TAZ CLI installation directory
-  taz_home: /usr/local/sandboxes/tools/taz-280/test-cli
+  taz_home: /u/henry/sandboxes/tools/taz-280/test-cli
   # Root directory containing test suites
   test_dir: ${sandbox.path}/zDevOps
   # JES procedure library
