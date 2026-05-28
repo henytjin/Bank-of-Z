@@ -53,61 +53,6 @@ get_pipeline_parameters() {
 }
 
 #########################################################
-# STAGE: Upload Pipeline Script
-#########################################################
-stage_upload_pipeline_script() {
-    print_stage "STAGE: Upload Pipeline Script"
-    
-    local PIPELINE_SCRIPT_SOURCE="$SCRIPTS_DIR/pipeline-common.sh"
-    local PIPELINE_SCRIPT_TARGET="$BANK_DIR/.setup/pipeline-common.sh"
-    local SCRIPT_PARENT_DIR=$(dirname "$PIPELINE_SCRIPT_TARGET")
-    
-    # Ensure parent directory exists
-    print_info "Ensuring parent directory exists: $SCRIPT_PARENT_DIR"
-    zowe rse-api-for-zowe-cli create uss-directory "$SCRIPT_PARENT_DIR" &> /dev/null || true
-    
-    # Delete existing file if it exists
-    print_info "Removing existing pipeline script if present..."
-    zowe rse-api-for-zowe-cli delete uss-file "$PIPELINE_SCRIPT_TARGET" &> /dev/null || true
-    
-    # Upload the script
-    print_info "Uploading pipeline script to USS..."
-    if zowe rse-api-for-zowe-cli upload file-to-uss "$PIPELINE_SCRIPT_SOURCE" "$PIPELINE_SCRIPT_TARGET" --encoding IBM-1047; then
-        # Make script executable
-        print_info "Making script executable..."
-        zowe rse-api-for-zowe-cli issue unix "chmod +x pipeline-common.sh" --cwd "$SCRIPT_PARENT_DIR"
-        print_success "Pipeline script uploaded successfully"
-    else
-        print_error "Failed to upload pipeline script"
-        exit 1
-    fi
-}
-
-#########################################################
-# STAGE: Upload Deploy Scripts
-#########################################################
-stage_upload_deploy_scripts() {
-    print_stage "STAGE: Upload Deploy Scripts"
-    
-    local DEPLOY_SOURCE="$SCRIPTS_DIR/deploy"
-    local DEPLOY_TARGET="$BANK_DIR/.setup/deploy"
-    
-    if [ ! -d "$DEPLOY_SOURCE" ]; then
-        print_warning "Deploy directory not found: $DEPLOY_SOURCE"
-        print_info "Skipping deploy scripts upload"
-        return 0
-    fi
-    
-    print_info "Uploading deploy scripts to USS..."
-    if zowe rse-api-for-zowe-cli upload dir-to-uss "$DEPLOY_SOURCE" "$DEPLOY_TARGET" --encoding UTF-8; then
-        print_success "Deploy scripts uploaded successfully"
-    else
-        print_error "Failed to upload deploy scripts"
-        exit 1
-    fi
-}
-
-#########################################################
 # STAGE: Execute Pipeline on Remote
 #########################################################
 stage_execute_pipeline() {
@@ -117,7 +62,7 @@ stage_execute_pipeline() {
     print_info "This will:"
     print_info "  - Refresh git repository (pull latest)"
     print_info "  - Run DBB build"
-    print_info "  - Deploy to CICS"
+    print_info "  - Deploy build"
     echo ""
     
     # Set environment variables for the remote execution
@@ -129,9 +74,9 @@ stage_execute_pipeline() {
     # Execute the pipeline script on remote
     set -o pipefail
     
-    if zowe rse-api-for-zowe-cli issue unix-shell "$ENV_VARS && bash $BANK_DIR/.setup/pipeline-common.sh" --cwd "$BANK_OF_Z_WORK_DIR" 2>&1 | tee /tmp/pipeline.log; then
+    if zowe rse-api-for-zowe-cli issue unix-shell "$ENV_VARS && bash $BANK_DIR/.setup/pipeline-remote.sh" --cwd "$BANK_OF_Z_WORK_DIR" 2>&1 | tee /tmp/pipeline.log; then
         # Check for errors in the log
-        if grep -i "error\|failed\|RC=[^0]\|return code [^0]" /tmp/pipeline.log | grep -v "Failed to change files and directory owner with chown" > /dev/null; then
+        if grep -i "error\|failed\|RC=[^0]\|return code [^0]" /tmp/pipeline.log | grep -v -E "Failed to change files and directory owner with chown|BGZZB0021E" > /dev/null; then
             print_warning "Pipeline completed but some warnings were detected"
             print_info "Review /tmp/pipeline.log for details"
         else
@@ -165,8 +110,6 @@ main() {
     get_pipeline_parameters
     
     # Execute stages
-    stage_upload_pipeline_script
-    stage_upload_deploy_scripts
     stage_execute_pipeline
     
     # Summary
