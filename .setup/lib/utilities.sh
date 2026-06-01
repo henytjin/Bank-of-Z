@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+echo "==> at utilities.sh"
+
 # ============================================================
 # YAML configuration helper functions
 # ============================================================
@@ -399,5 +401,6 @@ detect_bank_of_z_location() {
         print_success "Found Bank-of-Z at workspace location (VSCode workflow detected)"
     fi
     BANK_OF_Z_WORK_DIR=$(dirname $BANK_DIR)
+ echo "==> at utilities.detect_bank_of_z_location. BANK_OF_Z_WORK_DIR=$BANK_OF_Z_WORK_DIR"
     return 0
 }

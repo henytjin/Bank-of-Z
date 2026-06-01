@@ -11,6 +11,8 @@
 # Usage: bash setup-common.sh [workspace_path]
 #########################################################
 
+echo "==> at setup-common.sh"
+
 set -e  # Exit on error
 
 # =========================
@@ -23,6 +25,7 @@ source "$SCRIPTS_DIR/config/setenv.sh"
 # STAGE: Clone Required Accelerators
 #########################################################
 stage_clone_accelerators() {
+    echo "==> At setup-common.stage_clone_accelerators()"
     print_stage "STAGE: Clone Required Accelerators"
     
     print_info "Cloning DBB repository..."
@@ -90,6 +93,7 @@ stage_copy_framework() {
     # Print datasets configuration info
     print_info "Datasets configuration from datasets.yaml:"
     echo ""
+    echo "==> setup-common.stage_copy_framework check if $ZBUILDER_SOURCE/datasets.yaml exists and well-formed"
     if [ -f "$ZBUILDER_SOURCE/datasets.yaml" ]; then
         grep -A 200 "^variables:" "$ZBUILDER_SOURCE/datasets.yaml" | grep -E "^[[:space:]]*#.*Example:" | head -20 || true
     else
@@ -98,6 +102,7 @@ stage_copy_framework() {
     echo ""
     
     # Copy zBuilder framework
+    echo "==> setup-common.stage_copy_framework: going to copy $ZBUILDER_SOURCE to $ZBUILDER_TARGET"
     print_info "Copying zBuilder framework..."
     print_info "Source: $ZBUILDER_SOURCE"
     print_info "Target: $ZBUILDER_TARGET"
@@ -231,6 +236,8 @@ stage_static_scan_bank_of_z() {
 # STAGE: Setup Bank of Z databse
 #########################################################
 stage_setup_database() {
+    echo "==> At setup-common.stage_setup_database()"
+
     print_stage "STAGE: Create DB2 database"
 
     if [ ! -f "$BANK_DIR/.setup/setup/setup-db2-tables.sh" ]; then
@@ -373,16 +380,30 @@ print_usage() {
 #########################################################
 main_setup() {
     echo ""
+    echo "==> At setup-common.main_setup()."
+
     SYS=$(uname -Ia)
     print_info "Running on: $SYS"
     echo ""
 
+    echo "==> setup-common.main_setup() going to call  stage_setup_workspace()"
     stage_clone_accelerators
+    echo "==> setup-common.main_setup() return from stage_setup_workspace()"
+    
+    
+    echo "==> setup-common.main_setup() going to call  stage_copy_framework()"
     stage_copy_framework
+    echo "==> setup-common.main_setup() return from  stage_copy_framework()"
+
 
     # infrastructure
+    echo "==> setup-common.main_setup() going to call  stage_setup_database()"
     stage_setup_database
-    
+    echo "==> setup-common.main_setup() return from  stage_setup_database()"
+
+    echo "==> setup-common.main_setup() going to force return here"
+    return $?
+
     stage_setup_cics_region
     
     stage_setup_zosconnect_server
@@ -395,6 +416,8 @@ main_setup() {
 
 main_validation() {
     echo ""
+    echo "==>at setup-common.main_validation()."
+
     SYS=$(uname -Ia)
     print_info "Running on: $SYS"
     echo ""
@@ -409,14 +432,20 @@ main() {
     local phase="${1:-}"
 
     # Detect Execution Mode
+    echo "==>setup-common.main() going to call utilities.detect_bank_of_z_location()"
     detect_bank_of_z_location
+    echo "==>setup-common.main() return from utilities.detect_bank_of_z_location()"
 
     case "$phase" in
         validate-prereqs)
+            echo "==>setup-common.main() going to call main_validation()"
             main_validation
+            echo "==>setup-common.main() return from call main_validation()"
             ;;
         environment)
+            echo "==>setup-common.main() going to main_setup"
             main_setup
+            echo "==>setup-common.main() return from main_setup"
             ;;
         install-bank-of-z)
             stage_build_bank_of_z full

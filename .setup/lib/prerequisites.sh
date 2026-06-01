@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+echo "==> at prerequisites.sh"
+
 #########################################################
 # Prerequisites Check Library
 # Provides functions for verifying required tools
