@@ -12,7 +12,7 @@ repositories:
 
 # Java Home
 java:
-  java_home: /usr/local/sandboxes/tools/J21.0_64
+  java_home:  /usr/lpp/java/java21/current_64
 
 # Application metadata
 app:
@@ -26,21 +26,21 @@ app:
 # Sandbox root directory (USS)
 sandbox:
   # Root path of the project on the remote server
-  path: /usr/local/sandboxes/bank-of-z
+  path: /u/ibmuser/sandboxes/bank-of-z
 
 # Z configuration tools
 zconfig:
   # Z Config installation directory
-  zconfig_home: /usr/local/sandboxes/tools/zconfig
+  zconfig_home: /u/ibmuser/sandboxes/tools/zconfig
   # CICS Resource Builder installation
-  zcb_home: /usr/local/sandboxes/tools/zrb/cics-resource-builder-1.0.6
+  zcb_home: /u/ibmuser/sandboxes/tools/zrb/cics-resource-builder-1.0.6
   # Java runtime for Z tools
   java_home: ${java.java_home}
 
 # DBB (Dependency Based Build)
 dbb:
   # DBB installation directory
-  dbb_home: /usr/local/sandboxes/tools/dbb
+  dbb_home: /usr/lpp/IBM/idz/usr/lpp/IBM/dbb
   # Java runtime for DBB
   java_home: ${java.java_home}
   # DBB build output directory
@@ -110,7 +110,8 @@ zosconnect:
   server_name: bankOfZServer
   # HTTP/HTTPS ports
   http_port: 9080
-  https_port: 9443
+  # https_port: 9443
+  https_port: 9442
 
 # Frontend (Node.js runtime)
 fronted:
@@ -125,7 +126,7 @@ zoau:
 zowe:
   # RSE profile name to use (optional, defaults to 'rse')
   # Set via environment variable: export ZOWE_RSE_PROFILE=bankz
-  rse_profile: bankz
+  rse_profile: bankz.rse
 
 # CICS attributes
 cics:
