@@ -1,4 +1,6 @@
 #!/bin/env bash
+echo "==> at setup-db2-tables.sh"
+
 set -e
 # =============================================================================
 # Script  : setup-db2-tables.sh
