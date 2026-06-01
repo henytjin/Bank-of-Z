@@ -45,7 +45,22 @@ stage_initialize_remote_workspace() {
     
     # Create workspace directory
     print_info "Creating workspace directory on remote: $BANK_OF_Z_WORK_DIR"
-    zowe rse-api-for-zowe-cli create uss-directory "$BANK_OF_Z_WORK_DIR"
+
+    # Attempt to create directory, capturing output
+    create_output=$(zowe rse-api-for-zowe-cli create uss-directory "$BANK_OF_Z_WORK_DIR" 2>&1) || create_status=$?
+
+    # Check if creation failed
+    if [ -n "$create_status" ]; then
+        # Check if it's the "file exists" error (CRRZR2025E) - this is acceptable
+        if echo "$create_output" | grep -q "CRRZR2025E\|File exists"; then
+            print_warning "Directory already exists: $BANK_OF_Z_WORK_DIR (continuing)"
+        else
+            # Other errors are fatal
+            print_error "Failed to create workspace directory: $BANK_OF_Z_WORK_DIR"
+            print_error "Error details: $create_output"
+            exit 1
+        fi
+    fi
     
     print_success "Remote workspace directory initialized: $BANK_OF_Z_WORK_DIR"
 }
