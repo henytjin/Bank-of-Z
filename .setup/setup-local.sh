@@ -9,7 +9,7 @@
 #
 # Usage: bash setup-local.sh [workspace_path]
 #########################################################
-
+echo "==>at setup-local.sh"
 set -e  # Exit on error
 
 # =========================
@@ -177,7 +177,7 @@ main() {
     echo ""
     
     # Check prerequisites
-    check_zowe_cli
+    # check_zowe_cli
     
     # Load configuration
     load_config
@@ -185,7 +185,7 @@ main() {
     # Execute stages
     stage_initialize_remote_workspace
     stage_clone_bank_of_z
-    stage_execute_common_setup
+    # stage_execute_common_setup
     
     # Summary
     print_stage "ORCHESTRATION COMPLETE"
