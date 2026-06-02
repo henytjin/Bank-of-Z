@@ -178,15 +178,13 @@ fi
 
 deactivate
 
-echo "==> setup-cics-region.sh going to FORCE EXIT here"
-exit $?
-
 
 # =========================
 # Stage 4: Start CICS region
 # =========================
 print_stage "STAGE 4: Start CICS region"
 
+echo "==> setup-cics-region.sh going to jsub \"${APP_BASE_NAME}.CICS${APP_SHORT_NAME}.DFHSTART\""
 jsub "${APP_BASE_NAME}.CICS${APP_SHORT_NAME}.DFHSTART" &
 sleep 10
 print_info "${CYAN}[ZCONFIG-INSTALL]${NC} CICS Region Job Started"

@@ -1,4 +1,5 @@
 #!/bin/env bash
+echo "==> at task-dbb-build.sh"
 set -eu
 # =============================================================================
 # Script  : task-dbb-build.sh
@@ -35,6 +36,10 @@ export API_BASE=$(get_section_value 'dbb' 'api_base')
 export PATH="$JAVA_HOME/bin:$DBB_HOME/bin:$PATH"
 export GRADLE_USER_HOME="$(get_section_value 'sandbox' 'path')/.gradle"
 export GRADLE_OPTS="-Dfile.encoding=UTF-8"
+# export GRADLE_OPTS="-Dfile.encoding=UTF-8 -Dorg.gradle.native=false"
+
+
+export
 
 # =========================
 # Temporary log
@@ -106,11 +111,17 @@ print_info "${CYAN}[DBB-BUILD]${NC} Starting DBB build in $DBB_CWD ..."
 cd "$DBB_CWD" || exit 1
 
 set +e
+
+echo "==> task-dbb-build.sh going to create dir ${DBB_LOG_FOLDER}"
 rm -rf ${DBB_LOG_FOLDER}
 mkdir -p ${DBB_LOG_FOLDER}
+
+pwd
+echo "==> task-dbb-build.sh going to chtag -r src/api/src/main/api/openapi.yaml"
 chtag -r src/api/src/main/api/openapi.yaml
 set -e
 
+echo "==> task-dbb-build.sh going to dbb build \"$BUILD_TYPE\" --hlq \"${APP_BASE_NAME}.DBB\" --log-encoding ISO8859-1 $BUILD_OPTIONS --config \"$DBB_APP_CONF\""
 dbb build "$BUILD_TYPE" --hlq "${APP_BASE_NAME}.DBB" --log-encoding ISO8859-1 $BUILD_OPTIONS --config "$DBB_APP_CONF" 2>&1 | tee "$TMP_LOG" | while read -r line
 do
     case "$line" in
@@ -139,6 +150,8 @@ fi
 print_result "${GREEN}[DBB-BUILD][BUILD-RESULT]${NC} ${DBB_LOG_FOLDER}/BuildReport.json"
 print_result "${GREEN}[DBB-BUILD][BUILD-LIST]${NC} ${DBB_LOG_FOLDER}/buildList.txt"
 
+echo "==> task-dbb-build.sh going to FORCE EXIT here"
+exit $?
 # =========================
 # Skip packaging if nothing processed
 # =========================

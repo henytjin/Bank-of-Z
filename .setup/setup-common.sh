@@ -169,6 +169,8 @@ stage_build_bank_of_z() {
     cd "$BANK_DIR"
     
     set -o pipefail
+
+    echo "==> setup-common.stage_build_bank_of_z going to bash ${BANK_DIR}/.setup/tasks/task-dbb-build.sh $1"
     if bash ${BANK_DIR}/.setup/tasks/task-dbb-build.sh $1; then
         print_success "Bank of Z application build completed successfully"
     else
@@ -451,14 +453,34 @@ main() {
             echo "==>setup-common.main() return from main_setup"
             ;;
         install-bank-of-z)
+
+            echo "==>setup-common.main() going to call stage_build_bank_of_z full"
             stage_build_bank_of_z full
+            echo "==>setup-common.main() return from stage_build_bank_of_z full"
+
+            echo "==> setup-common.main() going to FORCE RETURN here"
+            return $?
+
+            echo "==>setup-common.main() going to call stage_deploy_bank_of_z"
             stage_deploy_bank_of_z
+            echo "==>setup-common.main() return from stage_deploy_bank_of_z"
+
+            echo "==>setup-common.main() going to call stage_populate_database"
             stage_populate_database
+            echo "==>setup-common.main() return from stage_populate_database"
             ;;
         update-bank-of-z)
+            echo "==>setup-common.main() going to call stage_static_scan_bank_of_z"
             stage_static_scan_bank_of_z
+            echo "==>setup-common.main() return from stage_static_scan_bank_of_z"
+
+            echo "==>setup-common.main() going to call stage_build_bank_of_z"            
             stage_build_bank_of_z
+            echo "==>setup-common.main() return from stage_build_bank_of_z"            
+
+            echo "==>setup-common.main() going to call stage_deploy_bank_of_z"
             stage_deploy_bank_of_z
+            echo "==>setup-common.main() return from stage_deploy_bank_of_z"
             ;;
         -h|--help|help|"")
             print_usage
