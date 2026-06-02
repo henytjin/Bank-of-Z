@@ -401,11 +401,14 @@ main_setup() {
     stage_setup_database
     echo "==> setup-common.main_setup() return from  stage_setup_database()"
 
+
+    echo "==>setup-common.main_setup() going to call stage_setup_cics_region"
+    stage_setup_cics_region
+    echo "==>setup-common.main_setup() return from stage_setup_cics_region"
+    
     echo "==> setup-common.main_setup() going to force return here"
     return $?
 
-    stage_setup_cics_region
-    
     stage_setup_zosconnect_server
     
     # Summary

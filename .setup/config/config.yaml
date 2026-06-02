@@ -26,14 +26,14 @@ app:
 # Sandbox root directory (USS)
 sandbox:
   # Root path of the project on the remote server
-  path: /u/ibmuser/sandboxes/bank-of-z
+  path: /usr/local/sandboxes/bank-of-z
 
 # Z configuration tools
 zconfig:
   # Z Config installation directory
-  zconfig_home: /u/ibmuser/sandboxes/tools/zconfig
+  zconfig_home: /usr/local/sandboxes/tools/zconfig
   # CICS Resource Builder installation
-  zcb_home: /u/ibmuser/sandboxes/tools/zrb/cics-resource-builder-1.0.6
+  zcb_home: /usr/local/sandboxes/tools/zrb/cics-resource-builder-1.0.6
   # Java runtime for Z tools
   java_home: ${java.java_home}
 
@@ -121,7 +121,7 @@ fronted:
 # ZOAU installtion directory
 zoau:
   # zoau_home: /usr/lpp/IBM/zoautil
-  zoau_home: /u/ibmuser/sandboxes/bank-of-z/tools/zoautils
+  zoau_home: /usr/local/sandboxes/tools/zoautils
 
 
 # Zowe CLI configuration

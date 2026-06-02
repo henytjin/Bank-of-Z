@@ -28,6 +28,8 @@ export LIBPATH="$ZOAU_HOME/lib:${LIBPATH:-}"
 # =========================
 # Create DB2 tables
 # =========================
+echo "==> setup-db2-tables.sh going to run_job_and_wait \"$SCRIPTS_DIR/../jcl/Db2-drop.jcl\" \"8\""
 run_job_and_wait "$SCRIPTS_DIR/../jcl/Db2-drop.jcl" "8"
+echo "==> setup-db2-tables.sh going to run_job_and_wait \"$SCRIPTS_DIR/../jcl/Db2-create.jcl\""
 run_job_and_wait "$SCRIPTS_DIR/../jcl/Db2-create.jcl"
 exit $?

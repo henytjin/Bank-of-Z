@@ -1,4 +1,5 @@
 #!/bin/env bash
+echo "==> at setup-cics-region.sh"
 set -eu
 # =============================================================================
 # Script  : setup-cics-region.sh
@@ -37,6 +38,7 @@ export LIBPATH="$ZOAU_HOME/lib:${LIBPATH:-}"
 # =========================
 # Cleanup
 # =========================
+echo "==> setup-cics-region.sh going to rm -rf \"$SCRIPTS_DIR/logs\""
 rm -rf "$SCRIPTS_DIR/logs"
 
 # =========================
@@ -44,15 +46,27 @@ rm -rf "$SCRIPTS_DIR/logs"
 # Ignore errors if already cancelled
 # =========================
 set +e
+echo "==> setup-cics-region.sh going to jcan P \"CICS${APP_SHORT_NAME}\""
 jcan P "CICS${APP_SHORT_NAME}" & 2>/dev/null
+echo "==> setup-cics-region.sh going to opercmd \"C CICS${APP_SHORT_NAME}\""
 opercmd "C CICS${APP_SHORT_NAME}" & 2>/dev/null
 sleep 10
+echo "==> setup-cics-region.sh going to drm \"${APP_BASE_NAME}.${APP_VERSION}.*\""
 drm "${APP_BASE_NAME}.${APP_VERSION}.*" & 2>/dev/null
+echo "==> setup-cics-region.sh going to drm \"${APP_BASE_NAME}.CICS${APP_SHORT_NAME}.*\""
 drm "${APP_BASE_NAME}.CICS${APP_SHORT_NAME}.*" & 2>/dev/null
+echo "==> setup-cics-region.sh going to drm \"${APP_BASE_NAME}.DBB.*\""
 drm "${APP_BASE_NAME}.DBB.*" & 2>/dev/null
 sleep 5
+
+echo "==> setup-cics-region.sh going to tsocmd \"ALLOC DA('${APP_BASE_NAME}.${APP_VERSION}.LOADLIB') NEW CATALOG DSNTYPE(LIBRARY) DSORG(PO) RECFM(U) BLKSIZE(32760) SPACE(5,5) CYL DIR(20)\""
+
+# Delete existing dataset to avoid error when alloc
+tsocmd "DELETE '${APP_BASE_NAME}.${APP_VERSION}.LOADLIB'" 2>&1 || true
+
 tsocmd "ALLOC DA('${APP_BASE_NAME}.${APP_VERSION}.LOADLIB') NEW CATALOG DSNTYPE(LIBRARY) DSORG(PO) RECFM(U) BLKSIZE(32760) SPACE(5,5) CYL DIR(20)"
 set -e
+
 
 # =============================================
 # Stage 1: Create JVM profile file
@@ -61,6 +75,7 @@ print_stage "STAGE 1: Create JVM profile file"
 
 zconfig_dir="$SCRIPTS_DIR/../zconfig"
 
+echo "==> setup-cics-region going to create $zconfig_dir/EYUSMSSJ.jvmprofile"
 cat > "$zconfig_dir/EYUSMSSJ.jvmprofile" <<EOF
 JAVA_HOME=/usr/lpp/java/java21/current_64
 WORK_DIR=$SANDBOX_DIR
@@ -79,6 +94,8 @@ JVMLOG=//DD:JVMLOG
 _BPXK_DISABLE_SHLIB=YES
 -Dcom.ibm.tools.attach.enable=no
 EOF
+cat $zconfig_dir/EYUSMSSJ.jvmprofile
+echo ""
 
 print_success "JVM profile file created successfully!"
 
@@ -91,6 +108,7 @@ uss_config_dir="$SANDBOX_DIR/CICS$APP_SHORT_NAME/config"
 rm -rf "$uss_config_dir"
 mkdir -p "$uss_config_dir/resourceoverrides"
 
+echo "==> setup-cics-region.sh going to create $uss_config_dir/resourceoverrides/resourceOverrides.cicsoverrides.yaml"
 cat > "$uss_config_dir/resourceoverrides/resourceOverrides.cicsoverrides.yaml" <<EOF
 schemaVersion: resourceOverrides/1.200
 resourceOverrides:
@@ -108,15 +126,21 @@ resourceOverrides:
         port: $IPIC_PORT
 EOF
 
+cat $uss_config_dir/resourceoverrides/resourceOverrides.cicsoverrides.yaml
+echo ""
+
 print_success "Overrides file created successfully!"
+
 
 # =========================
 # Stage 3: Create CICS instance with zconfig
 # =========================
 print_stage "STAGE 3: Create CICS instance with zconfig"
 
+echo "==> setup-cics-region.sh to $ZCS_HOME to path"
 export PATH="$ZCS_HOME/bin:$PATH"
 
+echo "==> setup-cics-region.sh to source $ZCONFIG_HOME/bin/activate"
 if [ -f "$ZCONFIG_HOME/bin/activate" ]; then
     source "$ZCONFIG_HOME/bin/activate"
 else
@@ -124,8 +148,16 @@ else
 fi
 
 cd "$SCRIPTS_DIR/../zconfig"
+echo "==> setup-cics-region.sh to rm -rf $SANDBOX_DIR/CICS${APP_BASE_NAME}"
 rm -rf "$SANDBOX_DIR/CICS${APP_BASE_NAME}"
 
+
+echo "==> setup-cics-region.sh to run zconfig apply"
+echo "==>   applid=CICS${APP_SHORT_NAME}"
+echo "==>   sysid=${APP_SHORT_NAME}"
+echo "==>   region_hlq=${APP_BASE_NAME}"
+echo "==>   region_uss_dir=$SANDBOX_DIR"
+echo "==>   cmci_port=$CMCI_PORT"
 zconfig apply \
   -e applid="CICS${APP_SHORT_NAME}" \
   -e sysid="${APP_SHORT_NAME}" \
@@ -145,6 +177,10 @@ else
 fi
 
 deactivate
+
+echo "==> setup-cics-region.sh going to FORCE EXIT here"
+exit $?
+
 
 # =========================
 # Stage 4: Start CICS region
