@@ -72,7 +72,7 @@ variables:
 
   # DB2 Exit Library. Example: DBC0CFG.SDSNEXIT
   - name: SDSNEXIT
-    value: DSN.V13R1M0.SDSNEXIT
+    value: DB2V13.SDSNEXIT
 
   # IMS Macro Library. Example: DFS.V11R1M0.SDFSMAC
   - name: SDFSMAC
