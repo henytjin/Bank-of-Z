@@ -1,9 +1,9 @@
 {
     "$schema": "./zowe.schema.json",
     "profiles": {
-        "bank-of-z": {
+        "techzone": {
             "properties": {
-                "protocol": "https",
+                "host": "52.118.187.45",
                 "rejectUnauthorized": false
             },
             "secure": [
@@ -11,29 +11,12 @@
                 "password"
             ],
             "profiles": {
-                "zosmf": {
-                    "type": "zosmf",
-                    "properties": {
-                        "port": 10443
-                    }
-                },
-                "ssh": {
-                    "type": "ssh",
-                    "properties": {
-                        "port": 22
-                    }
-                },
                 "rse": {
                     "type": "rse",
                     "properties": {
                         "port": 8195,
-                        "basePath": "rseapi"
-                    }
-                },
-                "cics": {
-                    "type": "cics",
-                    "properties": {
-                        "protocol": "http"
+                        "basePath": "rseapi",
+                        "protocol": "https"
                     }
                 },
                 "zOpenDebug": {
@@ -42,14 +25,32 @@
                         "dpsPort": 8192,
                         "dpsContextRoot": "api/v1",
                         "dpsSecured": true,
-                        "authenticationType": "basic",
                         "rdsPort": 8194,
-                        "rdsSecured": true,
-                        "uuid": "05a46db4-b73f-4c81-9f0a-51350d171355"
+                        "rejectUnauthorized": false,
+                        "uuid": "00974873-4b4a-4a03-9cd4-e25954623d8a"
+                    }
+                },
+                "ssh": {
+                    "type": "ssh",
+                    "properties": {
+                        "port": 2022
+                    }
+                },
+                "zosmf": {
+                    "type": "zosmf",
+                    "properties": {
+                        "port": 10443,
+                        "protocol": "https"
+                    }
+                },
+                "cics": {
+                    "type": "cics",
+                    "properties": {
+                        "protocol": "http"
                     }
                 }
             }
-        }
+        }        
     },
     "defaults": {
         "zosmf": "bank-of-z.zosmf",
